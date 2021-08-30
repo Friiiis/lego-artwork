@@ -1,0 +1,22 @@
+.DragAndDrop_container {
+    width: 100%;
+}
+
+.DragAndDrop_div {
+    margin-top: 25px;
+    border-width: 3px;
+    border-style: dashed;
+    border-color: grey;
+    border-radius: 15px;
+    background-color: #efefef;
+    height: 125px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.DragAndDrop_div:hover, .DragAndDrop_div_drag {
+    border-color: #02d0f9;
+    background-color: #eaf9fc;
+    cursor: pointer;
+}
