@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import ConfigureArtwork from './components/configureartwork/ConfigureArtwork';
 import DragAndDrop from './components/draganddrop/DragAndDrop';
+import GeneratedArtwork from './components/generatedartwork/GeneratedArtwork';
 import Helper from './res/Helper';
 
 interface AppState {
@@ -100,7 +101,6 @@ class App extends React.Component<{}, AppState> {
     // load json with colors
     const colors = require('./res/colors.json');
     console.log(colors);
-    ;
 
     const c = this.tempCanvasRef.current as HTMLCanvasElement;
     const ctx = c.getContext("2d") as CanvasRenderingContext2D;
@@ -153,38 +153,21 @@ class App extends React.Component<{}, AppState> {
             canvasWidth={this.state.canvasWidth}
             resizeArtwork={this.resizeArtwork.bind(this)}
           />
-          { this.state.hasUploaded && 
+          {this.state.hasUploaded && 
             <button 
               onClick={() => this.generate()}
             >
               Generate
             </button>
           }
-          { this.state.hasUploaded && this.state.errorMsg && 
+          {this.state.hasUploaded && this.state.errorMsg && 
             <p>{this.state.errorMsg}</p>
           }
       </div>
-      { this.state.hasGenerated &&
-        <div className="App_artwork_container">
-          {this.state.generatedArtwork.map((colors:{name:string, hex:string}[]) => {
-              return (
-                <div className="App_pixel_row">
-                  {
-                    colors.map((color:{name:string, hex:string}) => {
-                      return (
-                        <div 
-                          className="App_pixel"
-                          style={{ backgroundColor: color.hex }}
-                        ></div>
-                      );
-                    })
-                  }
-                </div>
-              );
-            })
-          }
-        </div>
-      }
+      <GeneratedArtwork 
+        hasGenerated={this.state.hasGenerated}
+        generatedArtwork={this.state.generatedArtwork}
+      />
       <canvas 
         ref={this.tempCanvasRef}
         style={{ opacity: 0 }}
