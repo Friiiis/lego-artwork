@@ -34,12 +34,11 @@ class ConfigureArtwork extends React.Component<ConfigureArtworkProps, ConfigureA
                 </div>
                 {this.props.showConfig && 
                     <div className="ConfigureArtwork_container_half">
-                        <p>Choose your LEGO artwork width in bricks:</p>
+                        <p>Choose your LEGO artwork width in bricks (deafult is 50):</p>
                         <input 
                             type="number" 
                             onChange={(e) => this.props.resizeArtwork(parseInt(e.target.value))}
                         />
-                        <p>Final size in LEGOs: {this.props.artworkWidth} x {this.props.artworkHeight} bricks</p>
                         <h3>Choose LEGO colors:</h3>
                         <div className="ConfigureArtwork_exclude_color_container">
                             {this.props.colors.map((color:{name:string, hex:string, exclude?:boolean}, index: number) => {
