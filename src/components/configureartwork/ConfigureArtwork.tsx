@@ -15,14 +15,6 @@ interface ConfigureArtworkState {
 }
 
 class ConfigureArtwork extends React.Component<ConfigureArtworkProps, ConfigureArtworkState> {
-    constructor(props: any){
-        super(props);
-        this.state = {
-            canvasHeight: 0,
-            canvasWidth: 0
-        }
-    }
-  
     render(){
         return (
             <div className="ConfigureArtwork_container">
