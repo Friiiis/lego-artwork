@@ -4,7 +4,9 @@ import ConfigureArtwork from './components/configureartwork/ConfigureArtwork';
 import DragAndDrop from './components/draganddrop/DragAndDrop';
 import GeneratedArtwork from './components/generatedartwork/GeneratedArtwork';
 import Helper from './res/Helper';
-import html2pdf from 'html2pdf.js';
+// import html2pdf from 'html2pdf.js';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 interface AppState {
   hasUploaded: boolean;
@@ -153,8 +155,57 @@ class App extends React.Component<{}, AppState> {
     this.setState({
       printing: true
     }, () => {
-      var element = document.getElementById('element-to-print');
-      html2pdf(element);
+      var artwork = document.getElementById('printArtwork') as HTMLElement;
+      var bricks = document.getElementById('printBricks') as HTMLElement;
+      html2canvas(artwork).then((artworkCanvas) => {
+        const margin = 30;
+        var pdf = new jsPDF('p','px', 'a4');
+        let width = pdf.internal.pageSize.getWidth() - margin;
+        let height = pdf.internal.pageSize.getHeight() - margin;
+
+        let widthRatio = width / artworkCanvas.width;
+        let heightRatio = height / artworkCanvas.height;
+
+        let ratio = widthRatio > heightRatio ? heightRatio : widthRatio;
+
+        pdf.addImage(
+          artworkCanvas, 
+          'JPEG', 
+          margin/2, 
+          margin/2, 
+          artworkCanvas.width * ratio, 
+          artworkCanvas.height * ratio
+        );
+
+        html2canvas(bricks).then((bricksCanvas) => {
+          pdf.addPage();
+
+          let bricksWidth = bricksCanvas.width;
+          let bricksHeight = bricksCanvas.height;
+          
+          if (bricksCanvas.height > (height - margin)) {
+            let widthRatio = (width - margin) / bricksCanvas.width;
+            let heightRatio = (height - margin) / bricksCanvas.height;
+    
+            let ratio = widthRatio > heightRatio ? heightRatio : widthRatio;
+            bricksWidth = bricksWidth * ratio;
+            bricksHeight = bricksHeight * ratio;
+          }
+
+          pdf.addImage(
+            bricksCanvas, 
+            'JPEG', 
+            margin, 
+            margin, 
+            bricksWidth, 
+            bricksHeight
+          );
+          
+          pdf.output('dataurlnewwindow');
+
+          this.setState({printing: false});
+        });
+      });
     });
   }
 
@@ -165,6 +216,11 @@ class App extends React.Component<{}, AppState> {
   render() {
     return (
       <div className="App">
+        { this.state.printing && 
+          <div className="App_print_overlay">
+            <h1>Generating PDF...</h1>
+          </div>
+        }
         <div className="App_container">
           <header>
             <h1>

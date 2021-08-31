@@ -32,8 +32,11 @@ class GeneratedArtwork extends React.Component<GeneratedArtworkProps, GeneratedA
         return (
             <>
                 { this.props.hasGenerated &&
-                <div id="printDiv">
-                    <div className="GeneratedArtwork_container">
+                <>
+                    <div 
+                        id="printArtwork"
+                        className="GeneratedArtwork_container"
+                    >
                     {this.props.generatedArtwork.map((colors:{name:string, hex:string}[]) => {
                         return (
                             <div className="GeneratedArtwork_pixel_row">
@@ -61,7 +64,10 @@ class GeneratedArtwork extends React.Component<GeneratedArtworkProps, GeneratedA
                         })
                     }
                     </div>
-                    <div style={{marginTop: 25}}>
+                    <div 
+                        id="printBricks"
+                        style={{marginTop: 25}}
+                    >
                         <h3>Bricks used:</h3>
                         {
                             usedColors.map((usedColors, i) => {
@@ -81,7 +87,7 @@ class GeneratedArtwork extends React.Component<GeneratedArtworkProps, GeneratedA
                             })
                         }
                     </div>
-                </div>
+                </>
                 }
             </>
         );
