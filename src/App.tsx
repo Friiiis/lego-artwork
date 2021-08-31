@@ -98,7 +98,6 @@ class App extends React.Component<{}, AppState> {
 
     // load json with colors
     const colors = require('./res/colors.json');
-    console.log(colors);
 
     const c = this.tempCanvasRef.current as HTMLCanvasElement;
     const ctx = c.getContext("2d") as CanvasRenderingContext2D;
