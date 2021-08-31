@@ -14,6 +14,7 @@ interface AppState {
   canvasHeight: number;
   canvasWidth: number;
   errorMsg: string;
+  colors: {name: string, hex: string, exclude?: boolean}[];
 }
 
 class App extends React.Component<{}, AppState> {
@@ -22,15 +23,17 @@ class App extends React.Component<{}, AppState> {
 
   constructor(props: any){
     super(props);
+    const colors = require('./res/colors.json');
     this.state = {
       hasUploaded: false,
       hasGenerated: false,
       generatedArtwork: [[]],
       artworkHeight: 0,
-      artworkWidth: 0,
+      artworkWidth: 50,
       canvasHeight: 0,
       canvasWidth: 0,
-      errorMsg: ""
+      errorMsg: "",
+      colors: colors
     }
     this.canvasRef = React.createRef();
     this.tempCanvasRef = React.createRef();
@@ -49,13 +52,19 @@ class App extends React.Component<{}, AppState> {
         c.height = image.height;
         c.width = image.width;
         ctx.drawImage(image,0,0);
+
+        var resetColors = this.state.colors.map((c) => {
+          return {name: c.name, hex: c.hex, exclude: false};
+        });
+        
         this.setState({
           hasUploaded: true, 
           hasGenerated: false,
           generatedArtwork: [[]],
           canvasHeight: image.height, 
-          canvasWidth: image.width 
-        }, () => this.resizeArtwork(50));
+          canvasWidth: image.width,
+          colors: resetColors
+        }, () => this.resizeArtwork(this.state.artworkWidth));
       }
       image.src = event.target?.result as string;
     }
@@ -81,6 +90,12 @@ class App extends React.Component<{}, AppState> {
 
   private generate() {
     if (
+      !this.state.artworkHeight ||
+      !this.state.artworkWidth
+      ) {
+      this.setState({errorMsg: "Please choose a size larger than 0"});
+      return
+    } else if (
       this.state.artworkHeight <= 0 ||
       this.state.artworkWidth <= 0
       ) {
@@ -95,9 +110,6 @@ class App extends React.Component<{}, AppState> {
     } else {
       this.setState({errorMsg: ""});
     }
-
-    // load json with colors
-    const colors = require('./res/colors.json');
 
     const c = this.tempCanvasRef.current as HTMLCanvasElement;
     const ctx = c.getContext("2d") as CanvasRenderingContext2D;
@@ -119,7 +131,7 @@ class App extends React.Component<{}, AppState> {
       const green = data[i + 1];
       const blue = data[i + 2];
       // const alpha = data[i + 3];
-      arr[row].push(Helper.getClosestColor(Helper.rgbToHex(red, green, blue), colors));
+      arr[row].push(Helper.getClosestColor(Helper.rgbToHex(red, green, blue), this.state.colors));
 
       if (((i + 4) % (width * 4)) === 0) {
         row++;
@@ -149,16 +161,25 @@ class App extends React.Component<{}, AppState> {
             canvasHeight={this.state.canvasHeight}
             canvasWidth={this.state.canvasWidth}
             resizeArtwork={this.resizeArtwork.bind(this)}
+            colors={this.state.colors}
+            excludeColor={(i) => {
+              var colors = this.state.colors;
+              colors[i]["exclude"] = !!!colors[i]["exclude"];
+              this.setState({colors: colors});
+            }}
           />
           {this.state.hasUploaded && 
-            <button 
-              onClick={() => this.generate()}
-            >
-              Generate
-            </button>
-          }
-          {this.state.hasUploaded && this.state.errorMsg && 
-            <p>{this.state.errorMsg}</p>
+            <>
+              <p>Final size in LEGOs: {this.state.artworkWidth} x {this.state.artworkHeight} bricks</p>
+              {this.state.hasUploaded && this.state.errorMsg && 
+                <p><b>{this.state.errorMsg}</b></p>
+              }
+              <button 
+                onClick={() => this.generate()}
+              >
+                Generate
+              </button>
+            </>
           }
       </div>
       <GeneratedArtwork 

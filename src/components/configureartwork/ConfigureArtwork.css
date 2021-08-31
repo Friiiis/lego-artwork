@@ -21,3 +21,19 @@
     height: 100%;
     width: 100%;
 }
+
+.ConfigureArtwork_exclude_color_container {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    margin: 0 40px;
+}
+
+.ConfigureArtwork_exclude_color {
+    height: 40px;
+    min-width: 40px;
+    border: 2px solid black;
+    margin: 2px;
+    cursor: pointer;
+    border-radius: 100%;
+}
