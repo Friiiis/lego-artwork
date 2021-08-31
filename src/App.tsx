@@ -226,7 +226,7 @@ class App extends React.Component<{}, AppState> {
             <h1>
               LEGO artwork creator
             </h1>
-            <p>The LEGO artwork creator lets you upload your own images to easily create LEGO pixel art. If you need inspiration on how to build the frame for your artwork, I recommend looking at the official LEGO Art building instructions (such as the <a href="https://www.lego.com/en-us/product/andy-warhols-marilyn-monroe-31197" target="_blank">Marylin Monroe</a> artwork)</p>
+            <p>The LEGO artwork creator lets you upload your own images to easily create LEGO pixel art. If you need inspiration on how to build the frame for your artwork, I recommend looking at the official LEGO Art building instructions (such as the <a href="https://www.lego.com/en-us/product/andy-warhols-marilyn-monroe-31197" rel="noreferrer" target="_blank">Marylin Monroe</a> artwork)</p>
           </header>
           <DragAndDrop
             onFile={(file) => this.onFile(file)}
