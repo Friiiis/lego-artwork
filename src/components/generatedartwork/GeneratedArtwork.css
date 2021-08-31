@@ -9,9 +9,14 @@
 }
   
 .GeneratedArtwork_pixel {
-    height: 10px;
-    width: 10px;
     border-radius: 100%;
+}
+
+.GeneratedArtwork_pixel > div {
+    color: white;
+    -webkit-text-stroke: 1px black;
+    font-weight: bold;
+    font-size: 20px;
 }
 
 .GeneratedArtwork_colors_used_container {
@@ -28,4 +33,15 @@
     border: 2px solid black;
     margin-right: 10px;
     border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.GeneratedArtwork_colors_used_color > p {
+    font-size: 22px;
+    color: white;
+    -webkit-text-stroke: 1px black;
+    font-weight: bold;
+    font-size: 20px;
 }

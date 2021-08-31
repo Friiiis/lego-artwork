@@ -13,5 +13,11 @@
 
 .App_container button {
   padding: 5px 20px;
+  margin: 5px;
 }
 
+.App_button_container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}

@@ -4,10 +4,12 @@ import ConfigureArtwork from './components/configureartwork/ConfigureArtwork';
 import DragAndDrop from './components/draganddrop/DragAndDrop';
 import GeneratedArtwork from './components/generatedartwork/GeneratedArtwork';
 import Helper from './res/Helper';
+import html2pdf from 'html2pdf.js';
 
 interface AppState {
   hasUploaded: boolean;
   hasGenerated: boolean;
+  printing: boolean;
   generatedArtwork: {name:string, hex:string}[][];
   artworkHeight: number;
   artworkWidth: number;
@@ -27,6 +29,7 @@ class App extends React.Component<{}, AppState> {
     this.state = {
       hasUploaded: false,
       hasGenerated: false,
+      printing: false,
       generatedArtwork: [[]],
       artworkHeight: 0,
       artworkWidth: 50,
@@ -89,26 +92,31 @@ class App extends React.Component<{}, AppState> {
   }
 
   private generate() {
+    var errorMsg = ""
     if (
       !this.state.artworkHeight ||
       !this.state.artworkWidth
       ) {
-      this.setState({errorMsg: "Please choose a size larger than 0"});
-      return
+      errorMsg = "Please choose a size larger than 0"
     } else if (
       this.state.artworkHeight <= 0 ||
       this.state.artworkWidth <= 0
       ) {
-      this.setState({errorMsg: "Please choose a size larger than 0"});
-      return
+      errorMsg = "Please choose a size larger than 0"
     } else if (
       this.state.artworkHeight > 500 ||
       this.state.artworkWidth > 500
       ){
-      this.setState({errorMsg: "Size can't be bigger than 500"});
+      errorMsg = "Size can't be bigger than 500"
+    }
+
+    this.setState({
+      errorMsg: errorMsg,
+      printing: false
+    });
+
+    if(errorMsg !== ""){
       return
-    } else {
-      this.setState({errorMsg: ""});
     }
 
     const c = this.tempCanvasRef.current as HTMLCanvasElement;
@@ -139,6 +147,19 @@ class App extends React.Component<{}, AppState> {
     }
 
     this.setState({generatedArtwork: arr, hasGenerated: true});
+  }
+
+  private downloadPDF(){
+    this.setState({
+      printing: true
+    }, () => {
+      var element = document.getElementById('element-to-print');
+      html2pdf(element);
+    });
+  }
+
+  private getURL(){
+
   }
 
   render() {
@@ -174,17 +195,32 @@ class App extends React.Component<{}, AppState> {
               {this.state.hasUploaded && this.state.errorMsg && 
                 <p><b>{this.state.errorMsg}</b></p>
               }
-              <button 
-                onClick={() => this.generate()}
-              >
-                Generate
-              </button>
+              <div className="App_button_container">
+                <button 
+                  onClick={() => this.generate()}
+                >
+                  Generate
+                </button>
+                <button
+                  disabled={!this.state.hasGenerated}
+                  onClick={() => this.downloadPDF()}
+                >
+                  Download PDF
+                </button>
+                <button
+                  disabled={!this.state.hasGenerated}
+                  onClick={() => this.getURL()}
+                >
+                  Get URL
+                </button>
+              </div>
             </>
           }
       </div>
       <GeneratedArtwork 
         hasGenerated={this.state.hasGenerated}
         generatedArtwork={this.state.generatedArtwork}
+        printing={this.state.printing}
       />
       <canvas 
         ref={this.tempCanvasRef}

@@ -4,6 +4,7 @@ import './GeneratedArtwork.css';
 interface GeneratedArtworkProps {
     hasGenerated: boolean;
     generatedArtwork: {name:string, hex:string}[][];
+    printing: boolean;
 }
 
 interface GeneratedArtworkState {
@@ -11,13 +12,17 @@ interface GeneratedArtworkState {
 
 class GeneratedArtwork extends React.Component<GeneratedArtworkProps, GeneratedArtworkState> {
     render() {
-        var usedColors:{name:string, hex:string}[] = [];
+        var number = 1;
+        var usedColors:{name:string, hex:string, number?: number}[] = [];
         var usedColorsCount:number[] = [];
         this.props.generatedArtwork.forEach((rows, i) => {
             rows.forEach((c, j) => {
                 if (!usedColors.some(used => used.name === c.name )) {
-                    usedColors.push(c);
+                    var cNumber: {name:string, hex:string, number?: number} = c;
+                    cNumber.number = number;
+                    usedColors.push(cNumber);
                     usedColorsCount.push(1);
+                    number++;
                 } else {
                     usedColorsCount[usedColors.findIndex(e => e.name === c.name)]++;
                 }
@@ -27,7 +32,7 @@ class GeneratedArtwork extends React.Component<GeneratedArtworkProps, GeneratedA
         return (
             <>
                 { this.props.hasGenerated &&
-                <>
+                <div id="printDiv">
                     <div className="GeneratedArtwork_container">
                     {this.props.generatedArtwork.map((colors:{name:string, hex:string}[]) => {
                         return (
@@ -37,9 +42,17 @@ class GeneratedArtwork extends React.Component<GeneratedArtworkProps, GeneratedA
                                 return (
                                     <div 
                                         className="GeneratedArtwork_pixel"
-                                        style={{ backgroundColor: color.hex }}
+                                        style={{ 
+                                            backgroundColor: color.hex,
+                                            height: this.props.printing ? 30 : 10,
+                                            width: this.props.printing ? 30 : 10
+                                        }}
                                         title={color.name + " (" + color.hex + ")"}
-                                    />
+                                    >
+                                        { this.props.printing &&
+                                            <div>{ usedColors[usedColors.findIndex(e => e.name === color.name)].number }</div>
+                                        }
+                                    </div>
                                 );
                                 })
                             }
@@ -57,14 +70,18 @@ class GeneratedArtwork extends React.Component<GeneratedArtworkProps, GeneratedA
                                         <div 
                                             className="GeneratedArtwork_colors_used_color"
                                             style={{ backgroundColor: usedColors.hex }}
-                                        />
-                                        <p><b>{usedColorsCount[i]}</b> {usedColors.name}</p>
+                                        >
+                                            { this.props.printing &&
+                                                <p>{usedColors.number}</p>
+                                            }
+                                        </div>
+                                        <p><b>{usedColorsCount[i]}</b> x {usedColors.name}</p>
                                     </div>
                                 );
                             })
                         }
                     </div>
-                </>
+                </div>
                 }
             </>
         );
