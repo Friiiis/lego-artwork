@@ -54,10 +54,8 @@ class App extends React.Component<{}, AppState> {
           hasGenerated: false,
           generatedArtwork: [[]],
           canvasHeight: image.height, 
-          canvasWidth: image.width,
-          artworkHeight: 0,
-          artworkWidth: 0    
-        });
+          canvasWidth: image.width 
+        }, () => this.resizeArtwork(50));
       }
       image.src = event.target?.result as string;
     }
