@@ -45,6 +45,9 @@ export default class Helper {
     
     scores.sort((a, b) => (a.score >= b.score) ? 1 : -1);
     scores = scores.filter((e) => !!!e.exclude);
-    return scores[0];
+    return { 
+      "name": scores[0].name,
+      "hex": scores[0].hex
+    };
   }
 }

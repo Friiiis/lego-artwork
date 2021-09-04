@@ -19,6 +19,7 @@ interface AppState {
   canvasWidth: number;
   errorMsg: string;
   colors: {name: string, hex: string, exclude?: boolean}[];
+  fromURL: boolean;
 }
 
 class App extends React.Component<{}, AppState> {
@@ -38,27 +39,48 @@ class App extends React.Component<{}, AppState> {
       canvasHeight: 0,
       canvasWidth: 0,
       errorMsg: "",
-      colors: colors
+      colors: colors,
+      fromURL: false
     }
     this.canvasRef = React.createRef();
     this.tempCanvasRef = React.createRef();
   }
 
+  componentDidMount() {
+    if (window.location.hash && window.location.hash !== "#") {
+      try {
+        const artwork = JSON.parse(decodeURI(window.location.hash.substr(1))) as {name:string, hex:string}[][];
+        this.setState({
+          fromURL: true,
+          hasGenerated: true,
+          generatedArtwork: artwork,
+          artworkWidth: artwork[0].length,
+          artworkHeight: artwork.length
+        });
+      } catch (error) {
+        this.setState({fromURL: false});
+      }
+    } else {
+      this.setState({fromURL: false});
+    }
+  }
+
   private onFile(file:File) {
-    const c = this.canvasRef.current as HTMLCanvasElement;
-    const ctx = c.getContext("2d") as CanvasRenderingContext2D;
-    const reader = new FileReader();
-
-    reader.onabort = () => console.log('file reading was aborted');
-    reader.onerror = () => console.log('file reading has failed');
-    reader.onload = (event) => {
-      var image = new Image();
-      image.onload = () => {
-        c.height = image.height;
-        c.width = image.width;
-        ctx.drawImage(image,0,0);
-
-        var resetColors = this.state.colors.map((c) => {
+    this.setState({fromURL: false}, () => {
+      const c = this.canvasRef.current as HTMLCanvasElement;
+      const ctx = c.getContext("2d") as CanvasRenderingContext2D;
+      const reader = new FileReader();
+      
+      reader.onabort = () => console.log('file reading was aborted');
+      reader.onerror = () => console.log('file reading has failed');
+      reader.onload = (event) => {
+        var image = new Image();
+        image.onload = () => {
+          c.height = image.height;
+          c.width = image.width;
+          ctx.drawImage(image,0,0);
+          
+          var resetColors = this.state.colors.map((c) => {
           return {name: c.name, hex: c.hex, exclude: false};
         });
         
@@ -68,13 +90,18 @@ class App extends React.Component<{}, AppState> {
           generatedArtwork: [[]],
           canvasHeight: image.height, 
           canvasWidth: image.width,
-          colors: resetColors
-        }, () => this.resizeArtwork(this.state.artworkWidth));
+          colors: resetColors,
+          fromURL: false
+        }, () => {
+          window.history.replaceState(null, "", " ");
+          this.resizeArtwork(this.state.artworkWidth);
+        });
+        }
+        image.src = event.target?.result as string;
       }
-      image.src = event.target?.result as string;
-    }
-    
-    reader.readAsDataURL(file);
+      
+      reader.readAsDataURL(file);
+    });
   }
 
   private resizeArtwork(newWidth:number) {
@@ -209,9 +236,13 @@ class App extends React.Component<{}, AppState> {
     });
   }
 
-  // private getURL(){
-
-  // }
+  private getURL(){
+    var encoded = encodeURI(JSON.stringify(this.state.generatedArtwork));
+    console.log(encoded);
+    var decoded = JSON.parse(decodeURI(encoded));
+    console.log(decoded);
+    window.open("http://localhost:3000/#" + encoded, '_blank');
+  }
 
   render() {
     return (
@@ -229,34 +260,35 @@ class App extends React.Component<{}, AppState> {
             <p>
               The LEGO artwork creator lets you upload your own images to easily create LEGO pixel art. 
               If you need inspiration on how to build the frame for your artwork, I recommend looking at 
-              the official LEGO Art building instructions (such as the 
-              <a 
+              the official LEGO Art building instructions (such as the <a
                 href="https://www.lego.com/en-us/product/andy-warhols-marilyn-monroe-31197" 
                 rel="noreferrer" 
                 target="_blank"
-              >
-              Marylin Monroe</a> artwork).
+              >Marylin Monroe</a> artwork).
             </p>
           </header>
           <DragAndDrop
             onFile={(file) => this.onFile(file)}
           />
-          <ConfigureArtwork 
-            canvasRef={this.canvasRef}
-            showConfig={this.state.hasUploaded}
-            artworkHeight={this.state.artworkHeight}
-            artworkWidth={this.state.artworkWidth}
-            canvasHeight={this.state.canvasHeight}
-            canvasWidth={this.state.canvasWidth}
-            resizeArtwork={this.resizeArtwork.bind(this)}
-            colors={this.state.colors}
-            excludeColor={(i) => {
-              var colors = this.state.colors;
-              colors[i]["exclude"] = !!!colors[i]["exclude"];
-              this.setState({colors: colors});
-            }}
-          />
-          {this.state.hasUploaded && 
+          {!this.state.fromURL &&
+            <ConfigureArtwork 
+              canvasRef={this.canvasRef}
+              showConfig={this.state.hasUploaded}
+              artworkHeight={this.state.artworkHeight}
+              artworkWidth={this.state.artworkWidth}
+              canvasHeight={this.state.canvasHeight}
+              canvasWidth={this.state.canvasWidth}
+              resizeArtwork={this.resizeArtwork.bind(this)}
+              colors={this.state.colors}
+              
+              excludeColor={(i) => {
+                var colors = this.state.colors;
+                colors[i]["exclude"] = !!!colors[i]["exclude"];
+                this.setState({colors: colors});
+              }}
+            /> 
+          }
+          {(this.state.hasUploaded || this.state.fromURL) && 
             <>
               <p>Final size in LEGOs: {this.state.artworkWidth} x {this.state.artworkHeight} bricks</p>
               {this.state.hasUploaded && this.state.errorMsg && 
@@ -264,6 +296,7 @@ class App extends React.Component<{}, AppState> {
               }
               <div className="App_button_container">
                 <button 
+                  disabled={this.state.fromURL}
                   onClick={() => this.generate()}
                 >
                   Generate
@@ -274,12 +307,12 @@ class App extends React.Component<{}, AppState> {
                 >
                   Download PDF
                 </button>
-                {/* <button
+                <button
                   disabled={!this.state.hasGenerated}
                   onClick={() => this.getURL()}
                 >
                   Get URL
-                </button> */}
+                </button>
               </div>
             </>
           }
