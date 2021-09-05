@@ -12,7 +12,7 @@ interface AppState {
   hasUploaded: boolean;
   hasGenerated: boolean;
   printing: boolean;
-  generatedArtwork: {name:string, hex:string}[][];
+  generatedArtwork: {n:string, h:string}[][];
   artworkHeight: number;
   artworkWidth: number;
   canvasHeight: number;
@@ -49,7 +49,7 @@ class App extends React.Component<{}, AppState> {
   componentDidMount() {
     if (window.location.hash && window.location.hash !== "#") {
       try {
-        const artwork = JSON.parse(decodeURI(window.location.hash.substr(1))) as {name:string, hex:string}[][];
+        const artwork = JSON.parse(decodeURI(window.location.hash.substr(1))) as {n:string, h:string}[][];
         this.setState({
           fromURL: true,
           hasGenerated: true,
@@ -156,7 +156,7 @@ class App extends React.Component<{}, AppState> {
     const imgData = ctx.getImageData(0, 0, width, height);
     const data = imgData.data;
 
-    var arr: {name:string, hex:string}[][] = [];
+    var arr: {n:string, h:string}[][] = [];
     for (let h = 0; h < height; h++) {
       arr.push([]);
     }
@@ -238,9 +238,9 @@ class App extends React.Component<{}, AppState> {
 
   private getURL(){
     var encoded = encodeURI(JSON.stringify(this.state.generatedArtwork));
-    console.log(encoded);
-    var decoded = JSON.parse(decodeURI(encoded));
-    console.log(decoded);
+    console.log(encoded.length);
+    // var decoded = JSON.parse(decodeURI(encoded));
+    // console.log(decoded);
     window.open("http://localhost:3000/#" + encoded, '_blank');
   }
 

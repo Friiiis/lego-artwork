@@ -3,7 +3,7 @@ import './GeneratedArtwork.css';
 
 interface GeneratedArtworkProps {
     hasGenerated: boolean;
-    generatedArtwork: {name:string, hex:string}[][];
+    generatedArtwork: {n:string, h:string}[][];
     printing: boolean;
 }
 
@@ -13,18 +13,18 @@ interface GeneratedArtworkState {
 class GeneratedArtwork extends React.Component<GeneratedArtworkProps, GeneratedArtworkState> {
     render() {
         var number = 1;
-        var usedColors:{name:string, hex:string, number?: number}[] = [];
+        var usedColors:{n:string, h:string, number?: number}[] = [];
         var usedColorsCount:number[] = [];
         this.props.generatedArtwork.forEach((rows, i) => {
             rows.forEach((c, j) => {
-                if (!usedColors.some(used => used.name === c.name )) {
-                    var cNumber: {name:string, hex:string, number?: number} = c;
+                if (!usedColors.some(used => used.n === c.n )) {
+                    var cNumber: {n:string, h:string, number?: number} = c;
                     cNumber.number = number;
                     usedColors.push(cNumber);
                     usedColorsCount.push(1);
                     number++;
                 } else {
-                    usedColorsCount[usedColors.findIndex(e => e.name === c.name)]++;
+                    usedColorsCount[usedColors.findIndex(e => e.n === c.n)]++;
                 }
             });
         });
@@ -37,23 +37,23 @@ class GeneratedArtwork extends React.Component<GeneratedArtworkProps, GeneratedA
                         id="printArtwork"
                         className="GeneratedArtwork_container"
                     >
-                    {this.props.generatedArtwork.map((colors:{name:string, hex:string}[]) => {
+                    {this.props.generatedArtwork.map((colors:{n:string, h:string}[]) => {
                         return (
                             <div className="GeneratedArtwork_pixel_row">
                             {
-                                colors.map((color:{name:string, hex:string}) => {
+                                colors.map((color:{n:string, h:string}) => {
                                 return (
                                     <div 
                                         className="GeneratedArtwork_pixel"
                                         style={{ 
-                                            backgroundColor: color.hex,
+                                            backgroundColor: color.h,
                                             height: this.props.printing ? 30 : 10,
                                             width: this.props.printing ? 30 : 10
                                         }}
-                                        title={color.name + " (" + color.hex + ")"}
+                                        title={color.n + " (" + color.h + ")"}
                                     >
                                         { this.props.printing &&
-                                            <div>{ usedColors[usedColors.findIndex(e => e.name === color.name)].number }</div>
+                                            <div>{ usedColors[usedColors.findIndex(e => e.n === color.n)].number }</div>
                                         }
                                     </div>
                                 );
@@ -75,13 +75,13 @@ class GeneratedArtwork extends React.Component<GeneratedArtworkProps, GeneratedA
                                     <div className="GeneratedArtwork_colors_used_container">
                                         <div 
                                             className="GeneratedArtwork_colors_used_color"
-                                            style={{ backgroundColor: usedColors.hex }}
+                                            style={{ backgroundColor: usedColors.h }}
                                         >
                                             { this.props.printing &&
                                                 <p>{usedColors.number}</p>
                                             }
                                         </div>
-                                        <p><b>{usedColorsCount[i]}</b> x {usedColors.name}</p>
+                                        <p><b>{usedColorsCount[i]}</b> x {usedColors.n}</p>
                                     </div>
                                 );
                             })
