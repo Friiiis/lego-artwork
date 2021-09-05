@@ -34,7 +34,7 @@ class ConfigureArtwork extends React.Component<ConfigureArtworkProps, ConfigureA
                 </div>
                 {this.props.showConfig && 
                     <div className="ConfigureArtwork_container_half">
-                        <p>Choose your LEGO artwork width in bricks (deafult is 50):</p>
+                        <p>Choose your LEGO artwork width in bricks (deafult is 48):</p>
                         <input 
                             type="number" 
                             onChange={(e) => this.props.resizeArtwork(parseInt(e.target.value))}

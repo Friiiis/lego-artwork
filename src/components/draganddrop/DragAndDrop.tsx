@@ -45,7 +45,7 @@ class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
                     hidden
                     ref={this.inputRef} 
                     type="file"
-                    accept="image/png, image/jpeg"
+                    accept="image/png, image/jpeg, image/webp"
                     onChange={() => {
                         const input = this.inputRef.current;
                         if (input && input.files) {

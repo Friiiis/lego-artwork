@@ -34,7 +34,7 @@ class App extends React.Component<{}, AppState> {
       printing: false,
       generatedArtwork: [[]],
       artworkHeight: 0,
-      artworkWidth: 50,
+      artworkWidth: 48,
       canvasHeight: 0,
       canvasWidth: 0,
       errorMsg: "",
@@ -229,13 +229,17 @@ class App extends React.Component<{}, AppState> {
             <p>
               The LEGO artwork creator lets you upload your own images to easily create LEGO pixel art. 
               If you need inspiration on how to build the frame for your artwork, I recommend looking at 
-              the official LEGO Art building instructions (such as the 
-              <a 
+              the official LEGO Art building instructions, such as the <a 
                 href="https://www.lego.com/en-us/product/andy-warhols-marilyn-monroe-31197" 
                 rel="noreferrer" 
                 target="_blank"
               >
-              Marylin Monroe</a> artwork).
+              Marylin Monroe</a> artwork. They use <a
+                href="https://www.bricklink.com/v2/catalog/catalogitem.page?id=190570&idColor=11&ccName=6302092#T=C&C=11"
+                rel="noreferrer"
+                target="_blank"
+              >16x16 Technic bricks</a> to create the canvas, so it is recommended to make the size of 
+              your artwork divisible by 16 (e.g. 48x48).
             </p>
           </header>
           <DragAndDrop
